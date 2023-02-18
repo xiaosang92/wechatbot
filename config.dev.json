@@ -1,4 +1,9 @@
 {
   "api_key": "your api key",
-  "auto_pass": true
+  "auto_pass": true,
+  "active_keyword": "G老师",
+  "active_group_switch": true,
+  "active_user_switch": true,
+  "at_active_switch": true,
+  "err_reply_word": "G老师太忙了，让G老师休息一下吧～"
 }

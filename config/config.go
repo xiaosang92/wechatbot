@@ -13,6 +13,16 @@ type Configuration struct {
 	ApiKey string `json:"api_key"`
 	// 自动通过好友
 	AutoPass bool `json:"auto_pass"`
+	//触发回复关键字
+	ActiveKeyword string `json:"active_keyword"`
+	//群消息关键字触发开关
+	ActiveGroupSwitch string `json:"active_group_switch"`
+	//私聊关键字触发开关
+	ActiveUserSwitch string `json:"active_user_switch"`
+	//@触发开关
+	AtActiveSwitch string `json:"at_active_switch"`
+	//chatgpt无返回时的默认回复内容
+	ErrReplyWord string `json:"err_reply_word"`
 }
 
 var config *Configuration
@@ -39,6 +49,7 @@ func LoadConfig() *Configuration {
 		// 如果环境变量有配置，读取环境变量
 		ApiKey := os.Getenv("ApiKey")
 		AutoPass := os.Getenv("AutoPass")
+
 		if ApiKey != "" {
 			config.ApiKey = ApiKey
 		}

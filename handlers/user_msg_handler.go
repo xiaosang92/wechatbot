@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/869413421/wechatbot/gtp"
 	"github.com/eatmoreapple/openwechat"
+	"github.com/869413421/wechatbot/config"
 	"log"
 	"strings"
 )
@@ -16,7 +17,14 @@ type UserMessageHandler struct {
 // handle 处理消息
 func (g *UserMessageHandler) handle(msg *openwechat.Message) error {
 	if msg.IsText() {
-		return g.ReplyText(msg)
+		if config.LoadConfig().ActiveUserSwitch {
+			if strings.Contains(msg.Content, config.LoadConfig().ActiveKeyword) {
+				return g.ReplyText(msg)
+			}
+		} else {
+			return g.ReplyText(msg)
+		}
+		
 	}
 	return nil
 }
@@ -35,10 +43,11 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 	// 向GPT发起请求
 	requestText := strings.TrimSpace(msg.Content)
 	requestText = strings.Trim(msg.Content, "\n")
+	requestText := strings.TrimSpace(strings.ReplaceAll(msg.Content, config.LoadConfig().ActiveKeyword, ""))
 	reply, err := gtp.Completions(requestText)
 	if err != nil {
 		log.Printf("gtp request error: %v \n", err)
-		msg.ReplyText("机器人神了，我一会发现了就去修。")
+		msg.ReplyText(config.LoadConfig().ErrReplyWord)
 		return err
 	}
 	if reply == "" {
