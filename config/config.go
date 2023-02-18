@@ -16,11 +16,11 @@ type Configuration struct {
 	//触发回复关键字
 	ActiveKeyword string `json:"active_keyword"`
 	//群消息关键字触发开关
-	ActiveGroupSwitch string `json:"active_group_switch"`
+	ActiveGroupSwitch bool `json:"active_group_switch"`
 	//私聊关键字触发开关
-	ActiveUserSwitch string `json:"active_user_switch"`
+	ActiveUserSwitch bool `json:"active_user_switch"`
 	//@触发开关
-	AtActiveSwitch string `json:"at_active_switch"`
+	AtActiveSwitch bool `json:"at_active_switch"`
 	//chatgpt无返回时的默认回复内容
 	ErrReplyWord string `json:"err_reply_word"`
 }
