@@ -42,8 +42,8 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 
 	// 向GPT发起请求
 	requestText := strings.TrimSpace(msg.Content)
-	requestText = strings.Trim(msg.Content, "\n")
-	requestText := strings.TrimSpace(strings.ReplaceAll(msg.Content, config.LoadConfig().ActiveKeyword, ""))
+	requestText = strings.Trim(requestText, "\n")
+	requestText = strings.TrimSpace(strings.ReplaceAll(requestText, config.LoadConfig().ActiveKeyword, ""))
 	reply, err := gtp.Completions(requestText)
 	if err != nil {
 		log.Printf("gtp request error: %v \n", err)
