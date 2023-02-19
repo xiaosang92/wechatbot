@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/869413421/wechatbot/gtp"
-	"github.com/eatmoreapple/openwechat"
-	"github.com/869413421/wechatbot/config"
 	"log"
 	"strings"
+
+	"github.com/869413421/wechatbot/config"
+	"github.com/869413421/wechatbot/gtp"
+	"github.com/eatmoreapple/openwechat"
 )
 
 var _ MessageHandlerInterface = (*UserMessageHandler)(nil)
@@ -19,12 +20,12 @@ func (g *UserMessageHandler) handle(msg *openwechat.Message) error {
 	if msg.IsText() {
 		if config.LoadConfig().ActiveUserSwitch {
 			if strings.Contains(msg.Content, config.LoadConfig().ActiveKeyword) {
-				// return g.ReplyText(msg)
+				return g.ReplyText(msg)
 			}
 		} else {
-			// return g.ReplyText(msg)
+			return g.ReplyText(msg)
 		}
-		
+
 	}
 	return nil
 }
