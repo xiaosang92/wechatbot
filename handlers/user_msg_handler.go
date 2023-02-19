@@ -39,6 +39,9 @@ func NewUserMessageHandler() MessageHandlerInterface {
 func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 	// 接收私聊消息
 	sender, err := msg.Sender()
+	if err != nil {
+		return err
+	}
 	log.Printf("Received User %v Text Msg : %v", sender.NickName, msg.Content)
 
 	// 向GPT发起请求
@@ -54,10 +57,21 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message) error {
 	if reply == "" {
 		return nil
 	}
-
-	// 回复用户
 	reply = strings.TrimSpace(reply)
 	reply = strings.Trim(reply, "\n")
+
+	self, err := msg.Bot.GetCurrentUser()
+	if err != nil {
+		return err
+	}
+	if msg.IsSendBySelf() {
+		friend := openwechat.Friend{User: &openwechat.User{UserName: msg.ToUserName}}
+		self.SendTextToFriend(&friend, reply)
+		return nil
+	}
+
+	// 回复用户
+
 	_, err = msg.ReplyText(reply)
 	if err != nil {
 		log.Printf("response user error: %v \n", err)

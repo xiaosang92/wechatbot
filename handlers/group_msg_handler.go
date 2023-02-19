@@ -38,6 +38,9 @@ func NewGroupMessageHandler() MessageHandlerInterface {
 func (g *GroupMessageHandler) ReplyText(msg *openwechat.Message) error {
 	// 接收群消息
 	sender, err := msg.Sender()
+	if err != nil {
+		return err
+	}
 	group := openwechat.Group{User: sender}
 	log.Printf("Received Group %v Text Msg : %v", group.NickName, msg.Content)
 
