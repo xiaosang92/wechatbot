@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/869413421/wechatbot/gtp"
-	"github.com/eatmoreapple/openwechat"
-	"github.com/869413421/wechatbot/config"
 	"log"
 	"strings"
+
+	"github.com/869413421/wechatbot/config"
+	"github.com/869413421/wechatbot/gtp"
+	"github.com/eatmoreapple/openwechat"
 )
 
 var _ MessageHandlerInterface = (*GroupMessageHandler)(nil)
@@ -16,6 +17,7 @@ type GroupMessageHandler struct {
 
 // handle 处理消息
 func (g *GroupMessageHandler) handle(msg *openwechat.Message) error {
+
 	if msg.IsText() {
 		if config.LoadConfig().AtActiveSwitch && msg.IsAt() {
 			return g.ReplyText(msg)
@@ -36,7 +38,7 @@ func NewGroupMessageHandler() MessageHandlerInterface {
 func (g *GroupMessageHandler) ReplyText(msg *openwechat.Message) error {
 	// 接收群消息
 	sender, err := msg.Sender()
-	group := openwechat.Group{sender}
+	group := openwechat.Group{User: sender}
 	log.Printf("Received Group %v Text Msg : %v", group.NickName, msg.Content)
 
 	// 替换掉@文本，然后向GPT发起请求
@@ -53,6 +55,20 @@ func (g *GroupMessageHandler) ReplyText(msg *openwechat.Message) error {
 		return nil
 	}
 
+	reply = strings.TrimSpace(reply)
+	reply = strings.Trim(reply, "\n")
+
+	//回复自己在群里发的消息
+	self, err := msg.Bot.GetCurrentUser()
+	if err != nil {
+		return err
+	}
+	if msg.IsSendBySelf() {
+		friend := openwechat.Friend{User: &openwechat.User{UserName: msg.ToUserName}}
+		self.SendTextToFriend(&friend, reply)
+		return nil
+	}
+
 	// 获取@我的用户
 	// groupSender, err := msg.SenderInGroup()
 	// if err != nil {
@@ -61,8 +77,6 @@ func (g *GroupMessageHandler) ReplyText(msg *openwechat.Message) error {
 	// }
 
 	// 回复@我的用户
-	reply = strings.TrimSpace(reply)
-	reply = strings.Trim(reply, "\n")
 	// atText := "@" + groupSender.NickName + " "
 	// replyText := atText + reply
 	_, err = msg.ReplyText(reply)
